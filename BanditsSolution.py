@@ -18,9 +18,13 @@ class Bandit(object):
         else:
             return 0
 
-thetas = [0.15,0.30,0.60]
-bandit = Bandit(3,thetas) #Define a 3-armed bandit
+# Create 2 bandit instances
 
+thetas1 = [0.15,0.30,0.60]
+bandit1 = Bandit(len(thetas1),thetas1) #Define a 3-armed bandit
+
+thetas2 = [0.15,0.30,0.60,0.4,0.3,0.2,0.1,0.5,0.25]
+bandit2 = Bandit(len(thetas2),thetas2) #Define a 9-armed bandit
 
 class Solver(object):
     def __init__(self, bandit):
@@ -174,6 +178,7 @@ def run_solver (solver, trials = 20, iterations = 1000):
         regret_history.append(solver.regret)
     print(solver.name, np.mean(regret_history), "+/-",np.std(regret_history))
 
+bandit = bandit1
 random = Random(bandit)
 greedy = Greedy(bandit,1)
 e_greedy = EpsilonGreedy(bandit,0.1) #Set epsilon = 0.1
