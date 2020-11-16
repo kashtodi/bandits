@@ -18,14 +18,12 @@ class Bandit(object):
         else:
             return 0
 
-# Create 2 bandit instances
+# Create a bandit instance
 
-thetas1 = [0.15,0.30,0.60]
-bandit1 = Bandit(len(thetas1),thetas1) #Define a 3-armed bandit
+thetas = [0.15,0.30,0.60]
+bandit = Bandit(3,thetas) #Define a 3-armed bandit
 
-thetas2 = [0.15,0.30,0.60,0.4,0.3,0.2,0.1,0.5,0.25]
-bandit2 = Bandit(len(thetas2),thetas2) #Define a 9-armed bandit
-
+# Define a generic solver
 class Solver(object):
     def __init__(self, bandit):
         """
@@ -64,7 +62,9 @@ class Solver(object):
             self.update_regret(i)
 
 
+# Implement some standard solvers
 
+# 1. Random (explore-only)
 class Random(Solver):
     def __init__(self, bandit):
         super(Random, self).__init__(bandit)
@@ -75,6 +75,7 @@ class Random(Solver):
             reward = self.bandit.pull_arm(i) #Pull arm i and get reward
             return i
 
+# 2. Greedy (exploit-only)
 class Greedy(Solver):
     def __init__(self, bandit, arm):
         super(Greedy, self).__init__(bandit)
@@ -85,6 +86,7 @@ class Greedy(Solver):
         reward = self.bandit.pull_arm(self.arm) #Pull arm i and get reward
         return self.arm
 
+#3. epsilon-greedy
 class EpsilonGreedy(Solver):
     def __init__(self, bandit, epsilon, init_theta=1.0):
         """
@@ -112,8 +114,7 @@ class EpsilonGreedy(Solver):
         self.estimates[i] += 1. / (self.counts[i]+1) * (reward - self.estimates[i]) #Update estimate for arm i
         return i
 
-
-
+# #4. UCB1 solver
 class UCB1(Solver): #Upper-confidence bound
 
     def __init__(self, bandit, init_theta=1.0):
@@ -141,6 +142,7 @@ class UCB1(Solver): #Upper-confidence bound
 
         return i
 
+#5. Thomson solving
 
 class ThompsonSampling(Solver):
     def __init__(self, bandit, init_alpha=1, init_beta=1):
@@ -168,6 +170,7 @@ class ThompsonSampling(Solver):
 
         return i
 
+# Let us now test the solvers over 20 trials, each with 1000 steps
 
 def run_solver (solver, trials = 20, iterations = 1000):
     regret_history = []
@@ -178,7 +181,6 @@ def run_solver (solver, trials = 20, iterations = 1000):
         regret_history.append(solver.regret)
     print(solver.name, np.mean(regret_history), "+/-",np.std(regret_history))
 
-bandit = bandit1
 random = Random(bandit)
 greedy = Greedy(bandit,1)
 e_greedy = EpsilonGreedy(bandit,0.1) #Set epsilon = 0.1
